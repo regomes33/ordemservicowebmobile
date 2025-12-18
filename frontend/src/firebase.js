@@ -1,0 +1,18 @@
+import { initializeApp } from 'firebase/app';
+import { getAuth } from 'firebase/auth';
+import { getFirestore } from 'firebase/firestore';
+import { getStorage } from 'firebase/storage';
+
+const firebaseConfig = {
+    apiKey: "AIzaSyCayskPNuk1re0To5n6Op7HnwCFiEmcvpk",
+    authDomain: "ordem-de-servico-2025.firebaseapp.com",
+    projectId: "ordem-de-servico-2025",
+    storageBucket: "ordem-de-servico-2025.firebasestorage.app",
+    messagingSenderId: "21332335828",
+    appId: "1:21332335828:web:4fca8d6d089257864d2f41"
+};
+
+const app = initializeApp(firebaseConfig);
+export const auth = getAuth(app);
+export const db = getFirestore(app);
+export const storage = getStorage(app);

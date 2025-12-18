@@ -4,7 +4,8 @@ import {
     createServiceOrder,
     updateServiceOrder,
     getServiceOrder,
-    getClients
+    getClients,
+    uploadPhoto
 } from '../services/firebaseService';
 import PhotoUploader from '../components/PhotoUploader';
 import MaterialSelector from '../components/MaterialSelector';
@@ -74,8 +75,30 @@ export default function ServiceOrderForm() {
         setLoading(true);
 
         try {
+            // Process photos - upload any pending files to Firebase Storage
+            let processedPhotos = [];
+
+            // Generate a temporary ID for new orders (for photo upload path)
+            const tempOrderId = id || `temp_${Date.now()}`;
+
+            for (const photo of formData.photos) {
+                // If photo has a File object, upload it first
+                if (photo.file) {
+                    const uploadedPhoto = await uploadPhoto(photo.file, tempOrderId);
+                    processedPhotos.push(uploadedPhoto);
+                } else if (photo.url) {
+                    // Already uploaded photo, keep it
+                    processedPhotos.push({
+                        url: photo.url,
+                        name: photo.name || '',
+                        path: photo.path || ''
+                    });
+                }
+            }
+
             const orderData = {
                 ...formData,
+                photos: processedPhotos,
                 laborCost: parseFloat(formData.laborCost) || 0
             };
 

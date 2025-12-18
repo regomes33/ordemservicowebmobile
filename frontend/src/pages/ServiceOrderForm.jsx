@@ -82,18 +82,19 @@ export default function ServiceOrderForm() {
             const tempOrderId = id || `temp_${Date.now()}`;
 
             for (const photo of formData.photos) {
-                // If photo has a File object, upload it first
-                if (photo.file) {
+                // If photo has a File object (pending upload), upload it first
+                if (photo.file instanceof File) {
                     const uploadedPhoto = await uploadPhoto(photo.file, tempOrderId);
                     processedPhotos.push(uploadedPhoto);
-                } else if (photo.url) {
-                    // Already uploaded photo, keep it
+                } else if (photo.url && !photo.url.startsWith('blob:')) {
+                    // Already uploaded photo with real URL, keep only serializable data
                     processedPhotos.push({
                         url: photo.url,
                         name: photo.name || '',
                         path: photo.path || ''
                     });
                 }
+                // Skip photos with blob: URLs that don't have a File (shouldn't happen but safety check)
             }
 
             const orderData = {
